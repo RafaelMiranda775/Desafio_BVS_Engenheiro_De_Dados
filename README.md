@@ -11,11 +11,24 @@ arquitetura, implementação e instruções sobre como executar o software.
 
 Este desenho de arquitetura contempla a ingestão de dados de uma fonte externa do GCP com finalidade de criar um Datalake no Storage e um Data Warehouse no Big Query para que o time de Business Intelligence consiga tomar as melhores decisões de negócios.
 
+### Cloud Storage
+
+A ferramenta Cloud Storage foi escolhida como Data Lake na nossa arquitetura pois fornece armazenamento dos arquivos ou como um backup de segurança para aqueles que já estão guardados em dispositivos físicos. Isso tudo com a segurança de que seus registros mais importantes não serão perdidos, danificados ou acessados por pessoas sem autorização. O mesmo também oferece Performance otimizada, Infraestrutura virtual ilimitada, ótimo custo-benefício, sincronização instantânea entre todos os aparelhos, alta escalabilidade entre outras.
+
+### Cloud Dataproc
 A arquitetura conta com uma camada de ETL no Cloud Dataproc que contemplará o uso do Spark que é uma ferramenta Big Data que tem o objetivo de processar grandes conjuntos de dados de forma paralela e distribuída, além de ser 100 vezes mais rápido pois processa tudo na memória.
 
+### Cloud Functions e Composer 
 O fluxo de orquestração da pipeline será gerenciado pelo Cloud Function e Composer, o Cloud Function funcionará como uma Trigger que executará uma Dag no Composer assim que o arquivo CSV chegar no bucket do Cloud Storage com finalidade de reduzir o tempo de carregamento dos dados no Big Query, o Composer terá o trabalho de criar um cluster Dataproc, executar um processo em Spark e desligar a máquina do Dataproc assim que o processamento acabar, seguindo as boas práticas do Google que faz menção sobre criar máquinas no Dataproc de forma preemptiva, além de executar uma task que irá carregar os arquivos processados para o Big Query e chamará uma procedure que atualizará os dados para uma segunda camada TRUSTED com dados Particionados e Clusterizados para melhor desempenho e economia no momento da consulta de dados.
 
-Toda a parte de Segurança será feita pelos papéis padrões do IAM.
+### Cloud IAM
+Toda a parte de Segurança será feita pelos papéis padrões do Google Cloud IAM ou Gerenciamento de identidades e acesso permitirá que os administradores decidam quem deve agir sobre os recursos e também abrange a auditoria interna.
+
+### Data Studio 
+
+Google Data Studio foi escolhido porque é uma ferramenta de dashboard do Google altamente personalizável e fácil de usar. É capaz de reunir diversas fontes de dados e extrair informações do Google Analytics, Google Ads, Search Console, YouTube e outras para criar relatórios e painéis informativos totalmente amigáveis.
+Assim como os aplicativos no Google Drive, o Data Studio amplia a capacidade de colaboração nas equipes para otimizar a gestão de relatórios de equipes e também entre clientes externos.
+Além do fato de ser gratuito – um motivo considerável – o Data Studio possui diversos recursos e vantagens para quem busca transformar dados em informações valiosas para os negócios.
 
 ## Escopo do Projeto 
 ![Desenho Arquitetura](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/documentos/Escopo_do_Projeto.PNG)
