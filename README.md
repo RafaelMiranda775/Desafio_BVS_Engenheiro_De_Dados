@@ -47,6 +47,36 @@ Além do fato de ser gratuito – um motivo considerável – o Data Studio poss
 Toda nossa infraestrutura será escrita com Terraform que é uma ferramenta para construir, alterar e configurar infraestrutura de maneira segura e eficiente. A ferramenta tem incontáveis benefícios que possibilitam criar toda a infraestrutura em ambiente de desenvolvimento e com alguns cliques conseguimos replicar tudo que foi feito para ambientes diferentes como Homologação ou Produção por exemplo, além de ser MultiCloud.
 
 # Desenvolvimento 
+## Terraform
+Link de [instalação](https://learn.hashicorp.com/tutorials/terraform/install-cli) do <b>Terraform</b>  
+
+Primeiramente iremos construir a infraestrutura do <b>Cloud Storage</b> que depende de uma <b>service account</b> com algumas permissões, coloquei na pasta <b>terraform</b> um <b> README.md</b> detalhando todas as permissões.
+
+![terraform storage](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/imagens/project_id.PNG)
+![terraform bucket name](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/imagens/bucket_name.PNG)
+
+Mude o <b>project id</b> e mude o <b>nome do bucket do Cloud Storage</b> pois o mesmo é <b>Global</b>.
+
+ #### Execute os comandos abaixo:
+```
+1. terraform init -> para conectar a sua conta do GCP pela service account
+```
+![terraform init](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/imagens/terraform_init.PNG)
+
+```
+2. terraform plan -> para planejar o que será criado
+```
+![terraform plan](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/imagens/terraform_plan.PNG)
+
+```
+3. terraform apply -> para aprovar as mudanças
+```
+![terraform apply1](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/imagens/terraform_apply1.PNG)
+![terraform apply2](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/imagens/terraform_apply2.PNG)
+
+### Infraestrutura Composer e Big Query
+
+O código de criação desses dois ambientes está na pasta <b>terraform</b>, a execução dos mesmos é bem parecida com o passo a passo feito acima, a única mudança é que no caso do Big Query e Composer os nomes não são <b>Globais</b> portanto não precisaram de mudanças.  
 
 ## Cloud Storage 
 ![pastas_bucket](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/imagens/pastas_bucket.PNG) 
@@ -62,6 +92,46 @@ Cada pasta de arquivo receberá o arquivo original.
 ![jobs_pyspark_finalizado](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/imagens/job_pyspark_finalizado.PNG)
 
 A fase de ETL dos arquivos será execultada em forma de Job no Dataproc com Pyspark, essa execução tem como objetivo a transformação dos dados de CSV para Parquet pois o tipo de dado Parquet oferece muitos benefícios como reduzir o espaço de armazenamento no Cloud Storage, execução mais rápido em determinadas operações, schema automático das tabelas além de ser um dos formatos preferidos do Big Query.  
+
+#### Exemple SPARK
+```
+# -*- coding: utf-8 -*-
+from pyspark.sql import SparkSession
+import os 
+from datetime import datetime
+
+bucket = 'desafio_bvs'
+
+# Data de Hoje 
+data_e_hora_atuais = datetime.now()
+data_e_hora_em_texto = data_e_hora_atuais.strftime('%d-%m-%Y')
+
+# Criando conexão com SparkSession
+spark = SparkSession.builder.appName('desafioBVS').getOrCreate()
+
+# Abrindo arquivo CSV
+df = spark.read.csv("gs://desafio_bvs/bill_of_materials/*.csv", encoding="utf-8", sep=",", header=True)
+
+# Printando Dataframe
+df.show()
+
+# Apagando arquivo do HDFS
+os.system('hdfs dfs -rm -r bill_of_materials.parquet')
+
+# Convertendo arquivo CSV para PARQUET
+convert_parquet = df.write.parquet("bill_of_materials.parquet")
+
+# Copiando arquivo parquet do HDFS para máquina local
+os.system('hdfs dfs -copyToLocal bill_of_materials.parquet/ .')
+
+# Copiando arquivo PARQUET de volta para o STORAGE com a DATA DE PROCESSAMENTO
+os.system("gsutil -m mv bill_of_materials.parquet gs://{}/bill_of_materials/bill_of_materials_processado/bill_of_materials_{}.parquet"\
+          .format(bucket, data_e_hora_em_texto))
+
+# Copiando arquivo original para pasta de BACKUP com a DATA DE PROCESSAMENTO
+os.system("gsutil -m mv gs://{}/bill_of_materials/bill_of_materials.csv gs://{}/bill_of_materials/bill_of_materials_backup/bill_of_materials_{}.csv"\
+          .format(bucket, bucket, data_e_hora_em_texto))
+```
 
 ## Cloud Storage 
 
@@ -116,7 +186,7 @@ authed_session = google.auth.transport.requests.AuthorizedSession(
     credentials)
 
 project_id = 'YOUR_PROJECT_ID'
-location = 'us-central1'
+location = 'us-east1'
 composer_environment = 'YOUR_COMPOSER_ENVIRONMENT_NAME'
 
 environment_url = (
@@ -140,13 +210,13 @@ print(query_string['client_id'][0])
 #### Ordem de execução arquivo Python:
 ```
 1. Abra o Cloud Shell
-2. Execute o comando -> sudo vim id_cliente.py 
-3. Clique com a tecla -> "i" para entrar no modo de inserção do Vim
-4. Cole o programa Python e execute a tecla -> 
-5. Mude o project_id = 'YOUR_PROJECT_ID' para o ID de seu projeto
-6. Mude o composer_environment = 'YOUR_COMPOSER_ENVIRONMENT_NAME' para o nome do seu Composer 
-6. Aperte a tecla ESC para sair do modo de edição, em seguida rode o comando  -> :wc para salvar o programa .py
-5. Rode o código python com o comando -> python id_cliente.py
+    1.1. Execute o comando -> sudo vim id_cliente.py 
+    1.2. Clique com a tecla -> "i" para entrar no modo de inserção do Vim
+    1.3. Cole o programa Python 
+    1.4. Mude o project_id = 'YOUR_PROJECT_ID' para o ID de seu projeto
+    1.5. Mude o composer_environment = 'YOUR_COMPOSER_ENVIRONMENT_NAME' para o nome do seu ambiente Composer 
+    1.6. Aperte a tecla ESC para sair do modo de edição, em seguida rode o comando  -> :wc para salvar o programa .py
+    1.7. Rode o código python com o comando -> python id_cliente.py
 ```
 #### Example de saída: 
 ![cod_python_cloud_function](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/imagens/cod_python_cloud_function.PNG)
