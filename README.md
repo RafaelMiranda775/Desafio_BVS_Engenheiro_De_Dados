@@ -3,11 +3,8 @@
 Este documento tem por finalidade descrever o passo a passo do processo de ingestão de dados e uma visualização (relatório) na plataforma GCP, além de compartilhar as decisões de 
 arquitetura, implementação e instruções sobre como executar o software.
 
-## Modelagem Conceitual dos Dados
-
-
 ## Desenho de Arquitetura
-![Desenho Arquitetura](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/documentos/Desenhoarquitetura.PNG)
+![Desenho Arquitetura](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/documentos/arquitetura.PNG)
 
 Este desenho de arquitetura contempla a ingestão de dados de uma fonte externa do GCP com finalidade de criar um Datalake no Storage e um Data Warehouse no Big Query para que o time de Business Intelligence consiga tomar as melhores decisões de negócios.
 
@@ -23,8 +20,8 @@ O BigQuery foi contemplado na nossa arquitetura porque é um data warehouse tota
 
 Quando emparelhado com o BI certo como Data Studio, pode ser uma ferramenta poderosa para qualquer negócio. Estas são algumas das principais razões pelas quais você deve considerar o Google BigQuery para suas ferramentas de BI.
 
-### Cloud Functions e Composer 
-O fluxo de orquestração da pipeline será gerenciado pelo Cloud Function e Composer, o Cloud Function funcionará como uma Trigger que executará uma Dag no Composer assim que o arquivo CSV chegar no bucket do Cloud Storage com finalidade de reduzir o tempo de carregamento dos dados no Big Query, o Composer terá o trabalho de criar um cluster Dataproc, executar um processo em Spark e desligar a máquina do Dataproc assim que o processamento acabar, seguindo as boas práticas do Google que faz menção sobre criar máquinas no Dataproc de forma preemptiva, além de executar uma task que irá carregar os arquivos processados para o Big Query e chamará uma procedure que atualizará os dados para uma segunda camada TRUSTED com dados Particionados e Clusterizados para melhor desempenho e economia no momento da consulta de dados.
+### Composer 
+O fluxo de orquestração da pipeline será gerenciado Composer, o mesmo terá o trabalho de criar um cluster Dataproc, executar um processo em Spark e desligar o cluster assim que o processamento acabar, seguindo as melhores práticas do Google que faz menção sobre criar cluster no Dataproc de forma preemptiva, além de executar uma task que irá carregar os arquivos processados para o Big Query e chamará uma procedure que atualizará os dados para uma segunda camada TRUSTED com dados Particionados e Clusterizados para melhor desempenho e economia no momento da consulta de dados.
 
 ### Cloud IAM
 Toda a parte de Segurança será feita pelos papéis padrões do Google Cloud IAM ou Gerenciamento de identidades e acesso permitirá que os administradores decidam quem deve agir sobre os recursos e também abrange a auditoria interna.
@@ -39,7 +36,7 @@ Além do fato de ser gratuito – um motivo considerável – o Data Studio poss
 ![Desenho Arquitetura](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/documentos/Escopo_do_Projeto.PNG)
 
 ## Premissas
-![Desenho Premissas](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/documentos/Premissas.PNG)
+![Desenho Premissas](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/documentos/premissas.PNG)
 
 ## Infraestrutura
 ![Desenho Infraestrutura](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/imagens/terraform.png) 
@@ -141,205 +138,5 @@ os.system("gsutil -m mv gs://{}/bill_of_materials/bill_of_materials.csv gs://{}/
 
 O job Spark do Cloud Dataproc executa uma rotina e cria duas pastas, uma com nome backup e a outra com nome processados, na pasta de backup está o arquivo original com a data de processamento, na pasta processados tem uma pasta com nome do arquivo e a data de processamento, dentro dessa pasta estão os arquivos parquet totalmente convertidos e com o tamanho bem menor em comparação com o arquivo CSV original.
 
-## Cloud Functions
+## Composer 
 
-#### Como conceder permissões à conta de serviço do Cloud Functions
-Para autenticação no IAP, conceda à conta de serviço do Appspot (usada pelo Cloud Functions) o papel Service Account Token Creator. Para fazer isso, execute o comando a seguir na ferramenta de linha de comando gcloud ou no Cloud Shell:
-```
-gcloud iam service-accounts add-iam-policy-binding \
-<b>your-project-id</b>@appspot.gserviceaccount.com \
---member=serviceAccount:<b>your-project-id</b>@appspot.gserviceaccount.com \
---role=roles/iam.serviceAccountTokenCreator
-```
-Você também precisa conceder o papel composer.user à conta de serviço para que ela possa acionar o DAG:
-```
-gcloud iam service-accounts add-iam-policy-binding \
-<b>your-project-id</b>@appspot.gserviceaccount.com \
---member=serviceAccount:<b>your-project-id</b>@appspot.gserviceaccount.com \
---role=roles/composer.user
-```
-![id projeto](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/imagens/idprojeto.PNG)
-#### Mude o parâmetro "your-project-id" para o id do seu projeto.
-#### Exemplo:
-
-```
-gcloud iam service-accounts add-iam-policy-binding \
-fit-union-275813@appspot.gserviceaccount.com \
---member=serviceAccount:fit-union-275813@appspot.gserviceaccount.com \
---role=roles/iam.serviceAccountTokenCreator
-```
-![service_account_cloud_function](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/imagens/service_account_cloud_function.PNG)
-
-#### Como conseguir o ID do cliente
-Para criar um token para autenticação no IAP, a função precisa do ID do cliente do proxy que protege o servidor da Web do Airflow. A API Cloud Composer não fornece essas informações diretamente. Em vez disso, faça uma solicitação não autenticada no servidor da Web do Airflow e capture o ID do cliente do URL de redirecionamento. Na amostra de código Python a seguir, demonstramos como conseguir o ID do cliente. Depois de executar esse código na linha de comando ou no Cloud Shell, o ID do cliente será impresso.
-```
-import google.auth
-import google.auth.transport.requests
-import requests
-import six.moves.urllib.parse
-
-# Authenticate with Google Cloud.
-# See: https://cloud.google.com/docs/authentication/getting-started
-credentials, _ = google.auth.default(
-    scopes=['https://www.googleapis.com/auth/cloud-platform'])
-authed_session = google.auth.transport.requests.AuthorizedSession(
-    credentials)
-
-project_id = 'YOUR_PROJECT_ID'
-location = 'us-east1'
-composer_environment = 'YOUR_COMPOSER_ENVIRONMENT_NAME'
-
-environment_url = (
-    'https://composer.googleapis.com/v1beta1/projects/{}/locations/{}'
-    '/environments/{}').format(project_id, location, composer_environment)
-composer_response = authed_session.request('GET', environment_url)
-environment_data = composer_response.json()
-airflow_uri = environment_data['config']['airflowUri']
-
-# The Composer environment response does not include the IAP client ID.
-# Make a second, unauthenticated HTTP request to the web server to get the
-# redirect URI.
-redirect_response = requests.get(airflow_uri, allow_redirects=False)
-redirect_location = redirect_response.headers['location']
-
-# Extract the client_id query parameter from the redirect.
-parsed = six.moves.urllib.parse.urlparse(redirect_location)
-query_string = six.moves.urllib.parse.parse_qs(parsed.query)
-print(query_string['client_id'][0])
-```
-#### Ordem de execução arquivo Python:
-```
-1. Abra o Cloud Shell
-    1.1. Execute o comando -> sudo vim id_cliente.py 
-    1.2. Clique com a tecla -> "i" para entrar no modo de inserção do Vim
-    1.3. Cole o programa Python 
-    1.4. Mude o project_id = 'YOUR_PROJECT_ID' para o ID de seu projeto
-    1.5. Mude o composer_environment = 'YOUR_COMPOSER_ENVIRONMENT_NAME' para o nome do seu ambiente Composer 
-    1.6. Aperte a tecla ESC para sair do modo de edição, em seguida rode o comando  -> :wc para salvar o programa .py
-    1.7. Rode o código python com o comando -> python id_cliente.py
-```
-#### Example de saída: 
-![cod_python_cloud_function](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/imagens/cod_python_cloud_function.PNG)
-```
-ID do cliente -> 469374234271-soi9m8qvrh9eo2nfrnpblivki4nsth58.apps.googleusercontent.com
-```
-#### Como criar a função
-Crie uma função com os arquivos main.py e requirements.txt mostrados abaixo, preenchendo as primeiras quatro constantes. Consulte Criar uma função. Ative a opção Tentar novamente em caso de falha.
-
-Quando você terminar, a função será parecida com esta imagem:
-
-![example_function](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/imagens/gcf-configuration-python.png)
-
-#### main.py
-```
-
-from google.auth.transport.requests import Request
-from google.oauth2 import id_token
-import requests
-
-IAM_SCOPE = 'https://www.googleapis.com/auth/iam'
-OAUTH_TOKEN_URI = 'https://www.googleapis.com/oauth2/v4/token'
-
-def trigger_dag(data, context=None):
-    """Makes a POST request to the Composer DAG Trigger API
-
-    When called via Google Cloud Functions (GCF),
-    data and context are Background function parameters.
-
-    For more info, refer to
-    https://cloud.google.com/functions/docs/writing/background#functions_background_parameters-python
-
-    To call this function from a Python script, omit the ``context`` argument
-    and pass in a non-null value for the ``data`` argument.
-    """
-
-    # Fill in with your Composer info here
-    # Navigate to your webserver's login page and get this from the URL
-    # Or use the script found at
-    # https://github.com/GoogleCloudPlatform/python-docs-samples/blob/master/composer/rest/get_client_id.py
-    
-    client_id = 'YOUR-CLIENT-ID'
-    
-    # This should be part of your webserver's URL:
-    # {tenant-project-id}.appspot.com
-    
-    webserver_id = 'YOUR-TENANT-PROJECT'
-    
-    # The name of the DAG you wish to trigger
-    
-    dag_name = 'composer_sample_trigger_response_dag'
-    
-    webserver_url = (
-        'https://'
-        + webserver_id
-        + '.appspot.com/api/experimental/dags/'
-        + dag_name
-        + '/dag_runs'
-    )
-    # Make a POST request to IAP which then Triggers the DAG
-    make_iap_request(
-        webserver_url, client_id, method='POST', json={"conf": data, "replace_microseconds": 'false'})
-
-# This code is copied from
-# https://github.com/GoogleCloudPlatform/python-docs-samples/blob/master/iap/make_iap_request.py
-# START COPIED IAP CODE
-def make_iap_request(url, client_id, method='GET', **kwargs):
-    """Makes a request to an application protected by Identity-Aware Proxy.
-    Args:
-      url: The Identity-Aware Proxy-protected URL to fetch.
-      client_id: The client ID used by Identity-Aware Proxy.
-      method: The request method to use
-              ('GET', 'OPTIONS', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE')
-      **kwargs: Any of the parameters defined for the request function:
-                https://github.com/requests/requests/blob/master/requests/api.py
-                If no timeout is provided, it is set to 90 by default.
-    Returns:
-      The page body, or raises an exception if the page couldn't be retrieved.
-    """
-    # Set the default timeout, if missing
-    if 'timeout' not in kwargs:
-        kwargs['timeout'] = 90
-
-    # Obtain an OpenID Connect (OIDC) token from metadata server or using service
-    # account.
-    google_open_id_connect_token = id_token.fetch_id_token(Request(), client_id)
-
-    # Fetch the Identity-Aware Proxy-protected URL, including an
-    # Authorization header containing "Bearer " followed by a
-    # Google-issued OpenID Connect token for the service account.
-    resp = requests.request(
-        method, url,
-        headers={'Authorization': 'Bearer {}'.format(
-            google_open_id_connect_token)}, **kwargs)
-    if resp.status_code == 403:
-        raise Exception('Service account does not have permission to '
-                        'access the IAP-protected application.')
-    elif resp.status_code != 200:
-        raise Exception(
-            'Bad response from application: {!r} / {!r} / {!r}'.format(
-                resp.status_code, resp.headers, resp.text))
-    else:
-        return resp.text
-# END COPIED IAP CODE
-```
-#### Mudanças 
-```
-client_id = '{ID do cliente}' # código retornado pelo processo python acima 
-```
-```
-webserver_id = 'https://e73724603f311c57cp-tp.appspot.com' 
-```
-![web_server_id](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/imagens/web_server_id.PNG)
-```
-dag_name = 'composer-bvs' # Nome da sua DAG
-```
-![nome_dag](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/imagens/nome_dag.PNG)
-
-#### requirements.txt
-
-Atualize seu requirements.txt com as seguintes dependências:
-
-```
-requests_toolbelt==0.9.1
-google-auth==1.24.0
-```
