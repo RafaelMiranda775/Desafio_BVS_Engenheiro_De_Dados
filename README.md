@@ -90,7 +90,7 @@ Cada pasta de arquivo receberá o arquivo original.
 
 A fase de ETL dos arquivos será execultada em forma de Job no Dataproc com Pyspark, essa execução tem como objetivo a transformação dos dados de CSV para Parquet pois o tipo de dado Parquet oferece muitos benefícios como reduzir o espaço de armazenamento no Cloud Storage, execução mais rápido em determinadas operações, schema automático das tabelas além de ser um dos formatos preferidos do Big Query.  
 
-#### Exemple SPARK
+#### Exemplo SPARK
 ```
 # -*- coding: utf-8 -*-
 from pyspark.sql import SparkSession
