@@ -76,7 +76,7 @@ Mude o <b>project id</b> e mude o <b>nome do bucket do Cloud Storage</b> pois o 
 O código de criação desses dois ambientes está na pasta <b>terraform</b>, a execução dos mesmos é bem parecida com o passo a passo feito acima, a única mudança é que no caso do Big Query e Composer os nomes não são <b>Globais</b> portanto não precisaram de mudanças.  
 
 ## Cloud Storage 
-![pastas_bucket](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/imagens/pastas_bucket.PNG) 
+![pastas_bucket](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/imagens/cloud_storage.PNG) 
 
 Organizei as pastas do Storage por arquivo e ferramenta.
 
