@@ -50,7 +50,9 @@ Link de [instalação](https://learn.hashicorp.com/tutorials/terraform/install-c
 Primeiramente iremos construir a infraestrutura do <b>Cloud Storage</b> que depende de uma <b>service account</b> com algumas permissões, coloquei na pasta <b>terraform</b> um <b> README.md</b> detalhando todas as permissões.
 
 ![terraform storage](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/imagens/project_id.PNG)
+
 ![terraform bucket name](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/imagens/bucket_name.PNG)
+
 ![terraform_folder_storage](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/imagens/folders.PNG)
 
 Mude o <b>project id</b> e mude o <b>nome do bucket do Cloud Storage</b> pois o mesmo é <b>Global</b>.
