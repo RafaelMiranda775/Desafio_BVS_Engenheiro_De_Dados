@@ -170,26 +170,22 @@ O job Python no Composer executará a orquestração seguindo a ordem passada ac
 5. <b>load_table_bill_of_materials</b> -> Após o cluster ser desligado os dados serão carregados no dataset <b>boa_vista</b> com nome <b>bill_of_materials particionada por tempo de processamento</b>.
 
 ![load big query](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/imagens/big_query_operator.PNG)
+
+![bigquery1](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/imagens/bigquery1.PNG)
+
 Quando você cria uma tabela particionada por tempo de processamento, o BigQuery carrega automaticamente os dados em partições diárias baseadas em datas que refletem a hora de processamento ou chegada dos dados. Pseudocoluna e identificadores de sufixo permitem redefinir (substituir) e redirecionar dados para partições em um dia específico.
 
 Nas tabelas particionadas por tempo de processamento, há uma pseudocoluna _PARTITIONTIME que contém um carimbo de data/hora baseado em data para os dados carregados nas tabelas. As consultas nas tabelas particionadas por tempo podem restringir os dados lidos fornecendo filtros _PARTITIONTIME que representam a localização de uma partição. Todos os dados na partição especificada são lidos pela consulta, mas o filtro de predicado _PARTITIONTIME restringe o número de partições verificadas.
 
-![bigquery1](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/imagens/bigquery1.PNG)
 ![bigquery2](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/imagens/bigquery2.PNG)
 
 6. <b>sp_trusted_bill_of_materials</b> -> Por último executaremos uma <b>Procedure</b> que fará o tratamento de alguns campos e criará uma camada <b>view</b> com os dados totalmente limpos e prontos para uso do time de business intelligence.
 
 ![procedures](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/imagens/procedures.PNG)
 
-#### Exemplo de procedure: 
+#### Procedure Big Query: 
 
 ![procedure1](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/imagens/procedure1.PNG)
-
-![Função procedures](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/imagens/procedures.PNG)
-
-A orquestração será executada <b>todo dia as 04:00 da manhã</b>.
-
-![Hora de Execução](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/imagens/hora_execu%C3%A7%C3%A3o.PNG)
 
 #### Código PROCEDURE da tabela bill_of_materials
 ```
@@ -265,11 +261,18 @@ SELECT
   FROM `boa_vista.bill_of_materials`;
 END;
 ```
-#### Schema tabela bill_of_materials
+#### Schema tabela bill_of_materials antes da execução da procedure
+![schema antes da procedure](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/imagens/schema_bill_of_materials_antes_procedure.PNG)
+
+#### Schema tabela bill_of_materials após execução de procedure 
 ![schema](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/imagens/bill_of_materials.PNG)
 
 #### Amostra de dados da tabela 
 ![Amostra de dados](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/imagens/amostradedados_price_quote.PNG)
+
+A orquestração será executada <b>todo dia as 04:00 da manhã</b>.
+
+![Hora de Execução](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/imagens/hora_execu%C3%A7%C3%A3o.PNG)
 
 #### Código DAG Composer
 ```
