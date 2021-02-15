@@ -143,7 +143,7 @@ O job Spark no Cloud Dataproc executa uma rotina e cria duas pastas, uma com nom
 
 ## Composer 
 #### Ordem de Execução: 
-![Tasks composer](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/imagens/tasks.PNG)
+![Tasks composer](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/imagens/Dag_composerFluxo.PNG)
 ![Ordem Execucao](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/imagens/ordem.PNG)
 
 O job Python no Composer executará a orquestração seguindo a ordem passada acima.
@@ -167,9 +167,11 @@ O job Python no Composer executará a orquestração seguindo a ordem passada ac
 
 ![deleta cluster](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/imagens/deleta_cluster.PNG)
 
-5. <b>load_table_bill_of_materials</b> -> Por último os dados serão carregados no dataset <b>boa_vista</b> com nome <b>bill_of_materials</b>
+5. <b>load_table_bill_of_materials</b> -> Por último os dados serão carregados no dataset <b>boa_vista</b> com nome <b>bill_of_materials</b>.
 
 ![load big query](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/imagens/big_query_operator.PNG)
+![bigquery1](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/imagens/bigquery1.PNG)
+![bigquery2](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/imagens/bigquery2.PNG)
 
 A orquestração será executada <b>todo dia as 04:00 da manhã</b>.
 
