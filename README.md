@@ -13,7 +13,7 @@ Este desenho de arquitetura contempla a ingestão de dados de uma fonte externa 
 A ferramenta Cloud Storage foi escolhida como Data Lake na nossa arquitetura pois fornece armazenamento dos arquivos ou como um backup de segurança para aqueles que já estão guardados em dispositivos físicos. Isso tudo com a segurança de que seus registros mais importantes não serão perdidos, danificados ou acessados por pessoas sem autorização. O mesmo também oferece Performance otimizada, Infraestrutura virtual ilimitada, ótimo custo-benefício, sincronização instantânea entre todos os aparelhos, alta escalabilidade entre outras.
 
 ### Cloud Dataproc
-A arquitetura conta com uma camada de ETL no Cloud Dataproc que contemplará o uso do Spark que é uma ferramenta Big Data que tem o objetivo de processar grandes conjuntos de dados de forma paralela e distribuída, além de ser 100 vezes mais rápido pois processa tudo na memória.
+A arquitetura conta com uma camada de ETL no Cloud Dataproc que contemplará o uso do Spark que é uma ferramentas Big Data para processar grandes conjuntos de dados de forma paralela e distribuída, além de ser 100 vezes mais rápido pois processa tudo na memória.
 
 ### Big Query
 O BigQuery foi contemplado na nossa arquitetura porque é um data warehouse totalmente gerenciado e sem servidor que permite análises escalonáveis em petabytes de dados. É uma plataforma como serviço (PaaS) que oferece suporte a consultas usando ANSI SQL. Ele também possui recursos integrados de aprendizado de máquina.
@@ -21,7 +21,7 @@ O BigQuery foi contemplado na nossa arquitetura porque é um data warehouse tota
 Quando emparelhado com o BI certo como Data Studio, pode ser uma ferramenta poderosa para qualquer negócio. Estas são algumas das principais razões pelas quais você deve considerar o Google BigQuery para suas ferramentas de BI.
 
 ### Composer 
-O fluxo de orquestração da pipeline será gerenciado Composer, o mesmo terá o trabalho de criar um cluster Dataproc, executar um processo em Spark e desligar o cluster assim que o processamento acabar, seguindo as melhores práticas do Google que faz menção sobre criar cluster no Dataproc de forma preemptiva, além de executar uma task que irá carregar os arquivos processados para o Big Query e chamará uma procedure que atualizará os dados para uma segunda camada TRUSTED com dados Particionados e Clusterizados para melhor desempenho e economia no momento da consulta de dados.
+O fluxo de orquestração da pipeline será gerenciado pelo Composer, o mesmo terá o trabalho de criar um cluster Dataproc, executar um processo Spark e desligar o cluster assim que o processamento acabar, seguindo as melhores práticas do Google que faz menção sobre criar cluster no Dataproc de forma preemptiva, além de executar uma task que irá carregar os arquivos processados para o Big Query e chamará uma procedure que atualizará os dados para uma segunda camada TRUSTED com dados Particionados e Clusterizados para melhor desempenho e economia no momento da consulta de dados.
 
 ### Cloud IAM
 Toda a parte de Segurança será feita pelos papéis padrões do Google Cloud IAM ou Gerenciamento de identidades e acesso permitirá que os administradores decidam quem deve agir sobre os recursos e também abrange a auditoria interna.
@@ -45,7 +45,7 @@ Toda nossa infraestrutura será escrita com Terraform que é uma ferramenta para
 
 # Desenvolvimento 
 ## Terraform
-Link de [instalação](https://learn.hashicorp.com/tutorials/terraform/install-cli) do <b>Terraform</b>  
+Link de [instalação](https://learn.hashicorp.com/tutorials/terraform/install-cli) do <b>Terraform</b>.  
 
 Primeiramente iremos construir a infraestrutura do <b>Cloud Storage</b> que depende de uma <b>service account</b> com algumas permissões, coloquei na pasta <b>terraform</b> um <b> README.md</b> detalhando todas as permissões.
 
@@ -91,9 +91,9 @@ Cada pasta de arquivo receberá o arquivo original.
 ![job_pyspark_example](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/imagens/job_pyspark.PNG)
 ![jobs_pyspark_finalizado](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/imagens/job_pyspark_finalizado.PNG)
 
-A fase de ETL dos arquivos será execultada em forma de Job no Dataproc com Pyspark, essa execução tem como objetivo a transformação dos dados de CSV para Parquet pois o tipo de dado Parquet oferece muitos benefícios como reduzir o espaço de armazenamento no Cloud Storage, execução mais rápido em determinadas operações, schema automático das tabelas além de ser um dos formatos preferidos do Big Query.  
+A fase de <b>ETL</b> dos arquivos será execultada em forma de Job no Cloud Dataproc com Pyspark, essa execução tem como objetivo a transformação dos dados de <b>CSV</b> para <b>Parquet</b> pois o tipo de dado Parquet oferece muitos benefícios como reduzir o espaço de armazenamento no Cloud Storage, execução mais rápido em determinadas operações, schema automático das tabelas além de ser um dos formatos preferidos do Big Query.  
 
-#### Exemplo SPARK
+#### Exemplo código SPARK
 ```
 # -*- coding: utf-8 -*-
 from pyspark.sql import SparkSession
@@ -139,7 +139,7 @@ Mude o nome da variável <b>bucket</b>.
 ![file_backup](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/imagens/file_backup.png)
 ![file_processado](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/imagens/file_processado.PNG)
 
-O job Spark no Cloud Dataproc executa uma rotina e cria duas pastas, uma com nome backup e a outra com nome processados, na pasta de backup está o arquivo original com a data de processamento, na pasta processados tem uma pasta com nome do arquivo e a data de processamento, dentro dessa pasta estão os arquivos parquet totalmente convertidos e com o tamanho bem menor em comparação com o arquivo CSV original.
+O job Spark no Cloud Dataproc executa uma rotina e cria duas pastas, uma com nome <b>backup</b> e a outra com nome <b>processado</b>, na pasta de backup está o arquivo original com a data de processamento, na pasta processados tem uma pasta com nome do arquivo e a data de processamento, dentro dessa pasta estão os arquivos parquet totalmente convertidos e com o tamanho bem menor em comparação com o arquivo CSV original.
 
 ## Composer 
 #### Ordem de Execução: 
@@ -148,46 +148,50 @@ O job Spark no Cloud Dataproc executa uma rotina e cria duas pastas, uma com nom
 
 O job Python no Composer executará a orquestração seguindo a ordem passada acima.
 
-1. <b>file_sensor_bill_of_materials</b> -> Essa tarefa funcionará como um sensor que irá esperar um arquivo chegar na pasta <b>gs://desafio-bvs/bill_of_materials</b> com prefixo <b>bill_of_materials.csv</b>, quando o mesmo chegar essa Tarefa passará para <b>sucess</b> e a próxima tarefa do fluxo se iniciará. 
+1. <b>file_sensor_bill_of_materials</b>: Essa tarefa funcionará como um sensor que irá esperar um arquivo chegar na pasta <b>gs://desafio-bvs/bill_of_materials</b> com prefixo <b>bill_of_materials.csv</b>, quando o mesmo chegar essa Tarefa passará para <b>sucess</b> e a próxima tarefa do fluxo se iniciará. 
 
 ![Storage Sensor](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/imagens/storage_sensor.PNG)
 
-#### Exemplo de <b>file_sensor_bill_of_materials</b> esperando arquivo com prefixo (bill_of_materials.csv) chegar: 
+Exemplo de <b>file_sensor_bill_of_materials</b> esperando arquivo com prefixo <b>bill_of_materials.csv</b> chegar: 
 ![sensor bill_of_materials](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/imagens/example_sensor.PNG)
 
-2. <b>create_cluster_bill_of_materials </b> -> Essa tarefa do fluxo criará um cluster Dataproc com nome <b>cluster-bill-of-materials</b>.
+2. <b>create_cluster_bill_of_materials </b>: Essa tarefa do fluxo criará um cluster Dataproc com nome <b>cluster-bill-of-materials</b>.
 
+##### Código DAG
 ![cria cluster dataproc](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/imagens/cria_cluster.PNG)
 
-3. <b>spark_bill_of_materials_2021-02-15</b> -> Após a criação do cluster, executaremos o script <b>SPARK</b> que seguirá os passos descritos acima.
+3. <b>spark_bill_of_materials_2021-02-15</b>: Após a criação do cluster, executaremos o script <b>SPARK</b> que seguirá os passos descritos acima.
 
+##### Código DAG
 ![pysparkoperator](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/imagens/pysparkoperator.PNG)
 
-4. <b>delete_cluster_bill_of_materials </b> -> Quando o processo <b>SPARK</b> terminar o cluster será desligado seguindo o modo <b>preemptivo</b>.
+4. <b>delete_cluster_bill_of_materials</b>: Quando o processo <b>SPARK</b> terminar o cluster será desligado seguindo o modo <b>preemptivo</b>.
 
+##### Código DAG
 ![deleta cluster](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/imagens/deleta_cluster.PNG)
 
-5. <b>load_table_bill_of_materials</b> -> Após o cluster ser desligado os dados serão carregados no dataset <b>boa_vista</b> com nome <b>bill_of_materials particionada por tempo de processamento</b>.
+5. <b>load_table_bill_of_materials</b>: Após o cluster ser desligado os dados serão carregados no dataset <b>boa_vista</b> com nome <b>bill_of_materials particionada por tempo de processamento</b>.
 
+##### Código DAG
 ![load big query](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/imagens/big_query_operator.PNG)
 
 ![bigquery1](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/imagens/bigquery1.PNG)
+![bigquery2](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/imagens/bigquery2.PNG)
 
 Quando você cria uma tabela particionada por tempo de processamento, o BigQuery carrega automaticamente os dados em partições diárias baseadas em datas que refletem a hora de processamento ou chegada dos dados. Pseudocoluna e identificadores de sufixo permitem redefinir (substituir) e redirecionar dados para partições em um dia específico.
 
-Nas tabelas particionadas por tempo de processamento, há uma pseudocoluna _PARTITIONTIME que contém um carimbo de data/hora baseado em data para os dados carregados nas tabelas. As consultas nas tabelas particionadas por tempo podem restringir os dados lidos fornecendo filtros _PARTITIONTIME que representam a localização de uma partição. Todos os dados na partição especificada são lidos pela consulta, mas o filtro de predicado _PARTITIONTIME restringe o número de partições verificadas.
+Nas tabelas particionadas por tempo de processamento, há uma pseudocoluna <b>_PARTITIONTIME</b> que contém um carimbo de data/hora baseado em data para os dados carregados nas tabelas. As consultas nas tabelas particionadas por tempo podem restringir os dados lidos fornecendo filtros <b>_PARTITIONTIME</b> que representam a localização de uma partição. Todos os dados na partição especificada são lidos pela consulta, mas o filtro de predicado <b>_PARTITIONTIME</b> restringe o número de partições verificadas.
 
-![bigquery2](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/imagens/bigquery2.PNG)
+6. <b>sp_trusted_bill_of_materials</b>: Por último executaremos uma <b>Procedure</b> que fará o tratamento de alguns campos e criará uma camada <b>view</b> com os dados totalmente limpos e prontos para uso do time de business intelligence.
 
-6. <b>sp_trusted_bill_of_materials</b> -> Por último executaremos uma <b>Procedure</b> que fará o tratamento de alguns campos e criará uma camada <b>view</b> com os dados totalmente limpos e prontos para uso do time de business intelligence.
-
+##### Código DAG
 ![procedures](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/imagens/procedures.PNG)
 
-#### Procedure Big Query: 
+##### Procedure Big Query 
 
 ![procedure1](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/imagens/procedure1.PNG)
 
-#### Código PROCEDURE da tabela bill_of_materials
+##### Código PROCEDURE da tabela bill_of_materials: 
 ```
 CREATE OR REPLACE PROCEDURE boa_vista_procedure.sp_trusted_bill_of_materials()
 BEGIN
@@ -262,16 +266,16 @@ SELECT
 WHERE DATE(_PARTITIONTIME) = DATE((SELECT max(_PARTITIONTIME) as maximo from boa_vista.price_quote));
 END;
 ```
-#### Schema tabela bill_of_materials antes da execução da procedure
+##### Schema tabela bill_of_materials antes da execução da procedure:
 ![schema antes da procedure](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/imagens/schema_bill_of_materials_antes_procedure.PNG)
 
-#### Schema tabela bill_of_materials após execução de procedure 
+##### Schema tabela bill_of_materials após execução de procedure:
 ![schema](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/imagens/bill_of_materials.PNG)
 
-#### Amostra de dados
+##### Amostra de dados:
 ![Amostra de dados](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/imagens/bill_table.PNG)
 
-#### Views Big Query
+##### Views Big Query:
 ![views](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/imagens/view_big_query.PNG)
 
 ### Schedule Composer
@@ -279,7 +283,7 @@ A orquestração será executada <b>todo dia as 04:00 da manhã</b>.
 
 ![Hora de Execução](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/imagens/hora_execu%C3%A7%C3%A3o.PNG)
 
-#### Código DAG Composer
+####: Código DAG Composer:
 ```
 from airflow import DAG
 from airflow.contrib.operators.dataproc_operator import DataprocClusterCreateOperator, DataprocClusterDeleteOperator,\
