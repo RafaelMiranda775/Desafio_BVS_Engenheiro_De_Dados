@@ -144,7 +144,7 @@ O job Spark no Cloud Dataproc executa uma rotina e cria duas pastas, uma com nom
 ## Composer 
 #### Ordem de Execução: 
 ![Tasks composer](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/imagens/Dag_composerFluxo.PNG)
-![Ordem Execucao](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/imagens/ordem.PNG)
+![Ordem Execucao](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/imagens/ordem2.PNG)
 
 O job Python no Composer executará a orquestração seguindo a ordem passada acima.
 
@@ -167,16 +167,109 @@ O job Python no Composer executará a orquestração seguindo a ordem passada ac
 
 ![deleta cluster](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/imagens/deleta_cluster.PNG)
 
-5. <b>load_table_bill_of_materials</b> -> Por último os dados serão carregados no dataset <b>boa_vista</b> com nome <b>bill_of_materials</b>.
+5. <b>load_table_bill_of_materials</b> -> Após o cluster ser desligado os dados serão carregados no dataset <b>boa_vista</b> com nome <b>bill_of_materials particionada por tempo de processamento</b>.
 
 ![load big query](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/imagens/big_query_operator.PNG)
+Quando você cria uma tabela particionada por tempo de processamento, o BigQuery carrega automaticamente os dados em partições diárias baseadas em datas que refletem a hora de processamento ou chegada dos dados. Pseudocoluna e identificadores de sufixo permitem redefinir (substituir) e redirecionar dados para partições em um dia específico.
+
+Nas tabelas particionadas por tempo de processamento, há uma pseudocoluna _PARTITIONTIME que contém um carimbo de data/hora baseado em data para os dados carregados nas tabelas. As consultas nas tabelas particionadas por tempo podem restringir os dados lidos fornecendo filtros _PARTITIONTIME que representam a localização de uma partição. Todos os dados na partição especificada são lidos pela consulta, mas o filtro de predicado _PARTITIONTIME restringe o número de partições verificadas.
+
 ![bigquery1](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/imagens/bigquery1.PNG)
 ![bigquery2](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/imagens/bigquery2.PNG)
+
+6. <b>sp_trusted_bill_of_materials</b> -> Por último executaremos uma <b>Procedure</b> que fará o tratamento de alguns campos e criará uma camada <b>view</b> com os dados totalmente limpos e prontos para uso do time de business intelligence.
+
+![procedures](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/imagens/procedures.PNG)
+
+#### Exemplo de procedure: 
+
+![procedure1](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/imagens/procedure1.PNG)
+
+![Função procedures](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/imagens/procedures.PNG)
 
 A orquestração será executada <b>todo dia as 04:00 da manhã</b>.
 
 ![Hora de Execução](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/imagens/hora_execu%C3%A7%C3%A3o.PNG)
 
+#### Código PROCEDURE da tabela bill_of_materials
+```
+CREATE OR REPLACE PROCEDURE boa_vista_procedure.sp_trusted_bill_of_materials()
+BEGIN
+CREATE OR REPLACE VIEW boa_vista_view.bill_of_materials AS
+SELECT
+  tube_assembly_id,
+   CASE
+    WHEN component_id_1 = "NA" THEN NULL
+  ELSE component_id_1 
+  END AS component_id_1,
+  CASE
+    WHEN quantity_1 = "NA" THEN NULL 
+  ELSE CAST(quantity_1 AS INT64) 
+  END AS quantity_1,
+   CASE
+    WHEN component_id_2 = "NA" THEN NULL
+  ELSE component_id_2 
+  END AS component_id_2,
+   CASE
+    WHEN quantity_2 = "NA" THEN NULL
+  ELSE CAST(quantity_2 AS INT64)
+  END AS quantity_2, 
+  CASE
+    WHEN component_id_3 = "NA" THEN NULL
+  ELSE component_id_3 
+  END AS component_id_3,
+   CASE
+    WHEN quantity_3 = "NA" THEN NULL
+  ELSE CAST(quantity_3 AS INT64) 
+  END AS quantity_3,
+   CASE
+    WHEN component_id_4 = "NA" THEN NULL
+  ELSE component_id_4 
+  END AS component_id_4,
+  CASE
+    WHEN quantity_4 = "NA" THEN NULL
+  ELSE CAST(quantity_4 AS INT64) 
+  END AS quantity_4,
+  CASE
+    WHEN component_id_5 = "NA" THEN NULL
+  ELSE component_id_5 
+  END AS component_id_5,
+  CASE
+    WHEN quantity_5 = "NA" THEN NULL
+  ELSE CAST(quantity_5 AS INT64) 
+  END AS quantity_5,
+    CASE
+    WHEN component_id_6 = "NA" THEN NULL
+  ELSE component_id_6 
+  END AS component_id_6,
+   CASE
+    WHEN quantity_6 = "NA" THEN NULL
+  ELSE CAST(quantity_6 AS INT64) 
+  END AS quantity_6,
+   CASE
+    WHEN component_id_7 = "NA" THEN NULL
+  ELSE component_id_7 
+  END AS component_id_7,
+   CASE
+    WHEN quantity_7 = "NA" THEN NULL
+  ELSE CAST(quantity_7 AS INT64) 
+  END AS quantity_7,
+  CASE
+    WHEN component_id_8	 = "NA" THEN NULL
+  ELSE component_id_8	 
+  END AS component_id_8	,
+  CASE
+    WHEN quantity_8	 = "NA" THEN NULL
+  ELSE CAST(quantity_8 AS INT64)	 
+  END AS quantity_8	
+  FROM `boa_vista.bill_of_materials`;
+END;
+```
+#### Schema tabela bill_of_materials
+![schema](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/imagens/bill_of_materials.PNG)
+
+#### Amostra de dados da tabela 
+![Amostra de dados](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/imagens/amostradedados_price_quote.PNG)
 
 #### Código DAG Composer
 ```
@@ -305,6 +398,17 @@ def load_big_query(task, source_objects, table_name):
 
     return load_big_query_operator
 
+# Chama as procedures
+def procedures(task, procedure):
+    sp_create_base_cluster = BigQueryOperator(
+        task_id=task,
+        bql=procedure,
+        use_legacy_sql=False,
+        dag=dag,
+        depends_on_past=False)
+
+    return sp_create_base_cluster
+
 # Função que recebe um prefixo para inicio de orquestração
 file_sensor_bill_of_materials = storage_sensor("file_sensor_bill_of_materials", "bill_of_materials", "bill_of_materials.csv")
 file_sensor_comp_boss = storage_sensor("file_sensor_comp_boss", "comp_boss", "comp_boss.csv")
@@ -330,10 +434,15 @@ load_bill_of_materials = load_big_query("load_table_bill_of_materials","bill_of_
 load_comp_boss = load_big_query("load_table_comp_boss","comp_boss/comp_boss_processado/comp_boss_"+today+".parquet/*.parquet","comp_boss")
 load_price_quote = load_big_query("load_table_price_quote","price_quote/price_quote_processado/price_quote_"+today+".parquet/*.parquet","price_quote")
 
+# Função chama as procedures do Big Query
+sp_trusted_bill_of_materials = procedures("sp_trusted_bill_of_materials","CALL boa_vista_procedure.sp_trusted_bill_of_materials()")
+sp_trusted_comp_boss = procedures("sp_trusted_comp_boss","CALL boa_vista_procedure.sp_trusted_comp_boss()")
+sp_trusted_price_quote = procedures("sp_trusted_price_quote","CALL boa_vista_procedure.sp_trusted_price_quote()")
+
 # Ordem de dependencias
-file_sensor_bill_of_materials >> cluster_bill_of_materials >> run_bill_of_materials >> delete_cluster_bill_of_materials >> load_bill_of_materials
+file_sensor_bill_of_materials >> cluster_bill_of_materials >> run_bill_of_materials >> delete_cluster_bill_of_materials >> load_bill_of_materials >> sp_trusted_bill_of_materials
 
-file_sensor_comp_boss >> cluster_comp_boss >> run_comp_boss >> delete_cluster_comp_boss >> load_comp_boss
+file_sensor_comp_boss >> cluster_comp_boss >> run_comp_boss >> delete_cluster_comp_boss >> load_comp_boss >> sp_trusted_comp_boss
 
-file_sensor_price_quote >> cluster_price_quote >> run_price_quote >> delete_cluster_price_quote >> load_price_quote
+file_sensor_price_quote >> cluster_price_quote >> run_price_quote >> delete_cluster_price_quote >> load_price_quote >> sp_trusted_price_quote
 ```
