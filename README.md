@@ -271,6 +271,7 @@ END;
 #### Amostra de dados
 ![Amostra de dados](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/imagens/bill_table.PNG)
 
+### Schedule Composer
 A orquestração será executada <b>todo dia as 04:00 da manhã</b>.
 
 ![Hora de Execução](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/imagens/hora_execu%C3%A7%C3%A3o.PNG)
