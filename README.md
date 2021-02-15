@@ -258,7 +258,8 @@ SELECT
     WHEN quantity_8	 = "NA" THEN NULL
   ELSE CAST(quantity_8 AS INT64)	 
   END AS quantity_8	
-  FROM `boa_vista.bill_of_materials`;
+  FROM `boa_vista.bill_of_materials`
+WHERE DATE(_PARTITIONTIME) = DATE((SELECT max(_PARTITIONTIME) as maximo from boa_vista.price_quote));
 END;
 ```
 #### Schema tabela bill_of_materials antes da execução da procedure
@@ -267,8 +268,8 @@ END;
 #### Schema tabela bill_of_materials após execução de procedure 
 ![schema](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/imagens/bill_of_materials.PNG)
 
-#### Amostra de dados da tabela 
-![Amostra de dados](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/imagens/amostradedados_price_quote.PNG)
+#### Amostra de dados
+![Amostra de dados](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/imagens/bill_table.PNG)
 
 A orquestração será executada <b>todo dia as 04:00 da manhã</b>.
 
