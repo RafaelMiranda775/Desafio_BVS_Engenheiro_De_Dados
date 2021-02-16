@@ -59,7 +59,7 @@ Faça o download da chave em formato <b>JSON</b>.
 
 Mude o nome da chave para <b>service_account.json</b>
 ![antes service account](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/imagens/antes_service_account.PNG)
-![depois service account](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/imagens/depois_service_account.PNG)
+![depois service account](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/imagens/serv_terraform.PNG)
 
 #### Código Terraform
 ![terraform storage](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/imagens/project_id.PNG)
