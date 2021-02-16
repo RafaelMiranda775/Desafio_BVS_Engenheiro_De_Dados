@@ -474,4 +474,4 @@ file_sensor_price_quote >> cluster_price_quote >> run_price_quote >> delete_clus
 ```
 ## Data Studio 
 
-![Relatorio Data Studio](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/imagens/DataStudio2.PNG)
+![Relatorio Data Studio](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/imagens/dashboard.PNG)
