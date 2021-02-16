@@ -283,7 +283,7 @@ A orquestração será executada <b>todo dia as 04:00 da manhã</b>.
 
 ![Hora de Execução](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/imagens/hora_execu%C3%A7%C3%A3o.PNG)
 
-####: Código DAG Composer:
+##### Código Completo DAG Composer:
 ```
 from airflow import DAG
 from airflow.contrib.operators.dataproc_operator import DataprocClusterCreateOperator, DataprocClusterDeleteOperator,\
@@ -458,3 +458,6 @@ file_sensor_comp_boss >> cluster_comp_boss >> run_comp_boss >> delete_cluster_co
 
 file_sensor_price_quote >> cluster_price_quote >> run_price_quote >> delete_cluster_price_quote >> load_price_quote >> sp_trusted_price_quote
 ```
+## Data Studio 
+
+![Relatorio Data Studio](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/imagens/DataStudio.PNG)
