@@ -100,7 +100,7 @@ from pyspark.sql import SparkSession
 import os 
 from datetime import datetime
 
-bucket = 'desafio_bvs'
+bucket = 'desafio-bvs'
 
 # Data de Hoje 
 data_e_hora_atuais = datetime.now()
@@ -110,7 +110,7 @@ data_e_hora_em_texto = data_e_hora_atuais.strftime('%d-%m-%Y')
 spark = SparkSession.builder.appName('desafioBVS').getOrCreate()
 
 # Abrindo arquivo CSV
-df = spark.read.csv("gs://desafio_bvs/bill_of_materials/*.csv", encoding="utf-8", sep=",", header=True)
+df = spark.read.csv("gs://"+bucket+"/bill_of_materials/*.csv", encoding="utf-8", sep=",", header=True)
 
 # Printando Dataframe
 df.show()
@@ -139,7 +139,7 @@ Mude o nome da variável <b>bucket</b>.
 ![file_backup](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/imagens/file_backup.png)
 ![file_processado](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/imagens/file_processado.PNG)
 
-O job Spark no Cloud Dataproc executa uma rotina e cria duas pastas, uma com nome <b>backup</b> e a outra com nome <b>processado</b>, na pasta de backup está o arquivo original com a data de processamento, na pasta processados tem uma pasta com nome do arquivo e a data de processamento, dentro dessa pasta estão os arquivos parquet totalmente convertidos com o tamanho bem menor em comparação com o arquivo CSV original.
+O job Spark no Cloud Dataproc executa uma rotina e cria duas pastas, uma com nome <b>backup</b> e a outra com nome <b>processado</b>, na pasta de <b>backup</b> está o arquivo original com a data de processamento, na pasta <b>processado</b> tem uma pasta com nome do arquivo e a data de processamento, dentro dessa pasta estão os arquivos parquet totalmente convertidos com o tamanho bem menor em comparação com o arquivo CSV original.
 
 ## Composer e Big Query 
 #### Ordem de Execução: 
