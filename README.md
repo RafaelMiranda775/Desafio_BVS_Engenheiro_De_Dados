@@ -139,7 +139,7 @@ Mude o nome da variável <b>bucket</b>.
 ![file_backup](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/imagens/file_backup.png)
 ![file_processado](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/imagens/file_processado.PNG)
 
-O job Spark no Cloud Dataproc executa uma rotina e cria duas pastas, uma com nome <b>backup</b> e a outra com nome <b>processado</b>, na pasta de backup está o arquivo original com a data de processamento, na pasta processados tem uma pasta com nome do arquivo e a data de processamento, dentro dessa pasta estão os arquivos parquet totalmente convertidos e com o tamanho bem menor em comparação com o arquivo CSV original.
+O job Spark no Cloud Dataproc executa uma rotina e cria duas pastas, uma com nome <b>backup</b> e a outra com nome <b>processado</b>, na pasta de backup está o arquivo original com a data de processamento, na pasta processados tem uma pasta com nome do arquivo e a data de processamento, dentro dessa pasta estão os arquivos parquet totalmente convertidos com o tamanho bem menor em comparação com o arquivo CSV original.
 
 ## Composer e Big Query 
 #### Ordem de Execução: 
@@ -150,6 +150,7 @@ O job Python no Composer executará a orquestração seguindo a ordem passada ac
 
 1. <b>file_sensor_bill_of_materials</b>: Essa tarefa funcionará como um sensor que irá esperar um arquivo chegar na pasta <b>gs://desafio-bvs/bill_of_materials</b> com prefixo <b>bill_of_materials.csv</b>, quando o mesmo chegar essa Tarefa passará para <b>sucess</b> e a próxima tarefa do fluxo se iniciará. 
 
+##### Código DAG
 ![Storage Sensor](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/imagens/storage_sensor.PNG)
 
 Exemplo de <b>file_sensor_bill_of_materials</b> esperando arquivo com prefixo <b>bill_of_materials.csv</b> chegar: 
@@ -460,4 +461,4 @@ file_sensor_price_quote >> cluster_price_quote >> run_price_quote >> delete_clus
 ```
 ## Data Studio 
 
-![Relatorio Data Studio](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/imagens/DataStudio.PNG)
+![Relatorio Data Studio](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/imagens/DataStudio2.PNG)
