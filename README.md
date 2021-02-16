@@ -141,7 +141,7 @@ Mude o nome da variável <b>bucket</b>.
 
 O job Spark no Cloud Dataproc executa uma rotina e cria duas pastas, uma com nome <b>backup</b> e a outra com nome <b>processado</b>, na pasta de backup está o arquivo original com a data de processamento, na pasta processados tem uma pasta com nome do arquivo e a data de processamento, dentro dessa pasta estão os arquivos parquet totalmente convertidos e com o tamanho bem menor em comparação com o arquivo CSV original.
 
-## Composer 
+## Composer e Big Query 
 #### Ordem de Execução: 
 ![Tasks composer](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/imagens/Dag_composerFluxo.PNG)
 ![Ordem Execucao](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/imagens/ordem2.PNG)
