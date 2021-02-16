@@ -49,6 +49,19 @@ Link de [instalação](https://learn.hashicorp.com/tutorials/terraform/install-c
 
 Primeiramente iremos construir a infraestrutura do <b>Cloud Storage</b> que depende de uma <b>service account</b> com algumas permissões, coloquei na pasta <b>terraform</b> um <b> README.md</b> detalhando todas as permissões.
 
+#### Service Account
+Pesquise por <b>IAM e administrador</b>.
+![iam](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/imagens/iam.PNG)
+
+Faça o download da chave em formato <b>JSON</b>.
+
+![chave service account](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/imagens/chave.PNG)
+
+Mude o nome da chave para <b>service_account.json</b>
+![antes service account](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/imagens/antes_service_account.PNG)
+![depois service account](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/imagens/depois_service_account.PNG)
+
+#### Código Terraform
 ![terraform storage](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/imagens/project_id.PNG)
 
 ![terraform bucket name](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/imagens/bucket_name.PNG)
