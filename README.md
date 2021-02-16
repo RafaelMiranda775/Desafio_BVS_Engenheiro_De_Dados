@@ -33,7 +33,7 @@ Assim como os aplicativos no Google Drive, o Data Studio amplia a capacidade de 
 Além do fato de ser gratuito – um motivo considerável – o Data Studio possui diversos recursos e vantagens para quem busca transformar dados em informações valiosas para os negócios.
 
 ## Escopo do Projeto 
-![Desenho Arquitetura](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/documentos/Escopo_do_Projeto.PNG)
+![Desenho Arquitetura](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/documentos/escopo_projeto.PNG)
 
 ## Premissas
 ![Desenho Premissas](https://github.com/RafaelMiranda775/Desafio_BVS_Engenheiro_De_Dados/blob/main/documentos/premissas.PNG)
